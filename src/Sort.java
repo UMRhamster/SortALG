@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Sort {
     /*算法排序的稳定性
      *腾讯校招2016笔试题曾考过
@@ -133,7 +135,6 @@ public class Sort {
     }
     ////////////////////////////////////////////////////////////////////////////////////////
     /////////////////插入排序的更高效排序：希尔排序///////////////////////////////////////////
-    //以此类推，知道所有元素有序排列。
     //分类--------------内部比较排序
     //数据结构----------数组
     //最差时间复杂度----根据步长序列的不同而不同，已知最好的为O(n(logn)^2)
@@ -157,6 +158,97 @@ public class Sort {
                 a[j+h] = get;
             }
             h = (h - 1) / 3;
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //////////////归并排序////////////////////////////////////////////////////////////////////
+    //分类--------------内部比较排序
+    //数据结构----------数组
+    //最差时间复杂度----O(nlogn)
+    //最优时间复杂度----O(nlogn)
+    //平均时间复杂度----O(nlogn)
+    //辅助空间----------O(n)
+    //稳定性------------稳定
+    public static void MergeSortIteration(int[] a){   //非递归
+        int left, mid, right;
+        for (int i = 1; i < a.length; i *= 2){
+            left = 0;
+            while (left + i < a.length){
+                mid = left + i - 1;
+                right = mid + i < a.length ? mid + i : a.length - 1;
+                Merge(a, left, mid, right);
+                left = right + 1;               // 前一个子数组索引向后移动
+            }
+        }
+    }
+    public static void MergeSortRecursion(int[] a, int left, int right){
+        if(left == right)
+            return;
+        int mid = (left + right) / 2;
+        MergeSortRecursion(a,left,mid);
+        MergeSortRecursion(a,mid+1,right);
+        Merge(a,left,mid,right);
+
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////
+    ///////////快速排序/////////////////////////////////////////////////////////////////////
+    //分类--------------内部比较排序
+    //数据结构----------数组
+    //最差时间复杂度----O(n^2)
+    //最优时间复杂度----O(nlogn)
+    //平均时间复杂度----O(nlogn)
+    //辅助空间----------一般为O(logn), 最差为O(n)
+    //稳定性------------不稳定
+    public static void QuickSort(int A[], int left, int right)
+    {
+        if (left >= right)
+            return;
+        int pivot_index = Partition(A, left, right); // 基准的索引
+        QuickSort(A, left, pivot_index - 1);
+        QuickSort(A, pivot_index + 1, right);
+    }
+    public static int Partition(int A[], int left, int right)  // 划分函数
+    {
+        int pivot = A[right];               // 这里每次都选择最后一个元素作为基准
+        int tail = left - 1;                // tail为小于基准的子数组最后一个元素的索引
+        for (int i = left; i < right; i++)  // 遍历基准以外的其他元素
+        {
+            if (A[i] <= pivot)              // 把小于等于基准的元素放到前一个子数组末尾
+            {
+                Swap(A, ++tail, i);
+            }
+        }
+        Swap(A, tail + 1, right);           // 最后把基准放到前一个子数组的后边，剩下的子数组既是大于基准的子数组
+        // 该操作很有可能把后面元素的稳定性打乱，所以快速排序是不稳定的排序算法
+        return tail + 1;                    // 返回基准的索引
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    //
+    //合并已排好序的数组
+    public static void Merge(int[] a, int left, int mid, int right){
+        int len = right - left + 1;
+        int[] temp = new int[len];       // 辅助空间O(n)
+        int index = 0;
+        int i = left;                   // 前一数组的起始元素
+        int j = mid + 1;                // 后一数组的起始元素
+        while (i <= mid && j <= right)
+        {
+            temp[index++] = a[i] <= a[j] ? a[i++] : a[j++];  // 带等号保证归并排序的稳定性
+        }
+        while (i <= mid)
+        {
+            temp[index++] = a[i++];
+        }
+        while (j <= right)
+        {
+            temp[index++] = a[j++];
+        }
+        for (int k = 0; k < len; k++)
+        {
+            a[left++] = temp[k];
         }
     }
     //交换数组中的两个值
